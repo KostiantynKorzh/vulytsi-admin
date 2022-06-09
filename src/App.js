@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+} from "react-router-dom";
+import Street from "./Street";
+import AllStreets from "./AllStreets";
+import { createContext, useState } from "react";
+import Header from "./Header";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export const StreetContext = createContext({
+    street: null, setStreet: () => {
+    },
+    allStreets: [], setAllStreets: () => {
+    }
+});
+
+const App = () => {
+    const [ street, setStreet ] = useState();
+    const [ allStreets, setAllStreets ] = useState();
+
+    return (
+        <StreetContext.Provider value={{street, setStreet, allStreets, setAllStreets}}>
+            <BrowserRouter>
+                <Header/>
+                <Routes>
+                    <Route path="/" element={<AllStreets/>}/>
+                    <Route path="/add" element={<Street/>}/>
+                    <Route path="/edit" element={<Street/>}/>
+                </Routes>
+            </BrowserRouter>
+        </StreetContext.Provider>
+    )
 }
 
 export default App;

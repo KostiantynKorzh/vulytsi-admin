@@ -3,6 +3,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapGL, { Layer, Marker, Source } from "@urbica/react-map-gl";
 import { Button, ButtonGroup } from "@mui/material";
 
+let isDeletingMarker = false;
+
 export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
     const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
@@ -65,7 +67,11 @@ export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
                     if (isChoosingCenter) {
                         setStreetCenterCoords(e.lngLat)
                     } else {
-                        setSelectedCoordsForNewStreet(prev => [ ...prev, e.lngLat ]);
+                        if (!isDeletingMarker) {
+                            setSelectedCoordsForNewStreet(prev => [ ...prev, e.lngLat ]);
+                        } else {
+                            isDeletingMarker = false;
+                        }
                     }
                 }}
             >
@@ -88,6 +94,12 @@ export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
                     <Marker
                         longitude={selectedCoords.lng}
                         latitude={selectedCoords.lat}
+                        onClick={() => {
+                            isDeletingMarker = true;
+                            setSelectedCoordsForNewStreet([ ...selectedCoordsForNewStreet.filter(markerCoords => {
+                                return !(markerCoords.lng === selectedCoords.lng && markerCoords.lat === selectedCoords.lat);
+                            }) ]);
+                        }}
                     >
                         <img
                             src={"/marker.png"}

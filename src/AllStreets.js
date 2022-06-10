@@ -35,7 +35,16 @@ export const AllStreets = () => {
                                 <EditIcon/>
                             </IconButton>,
                             <IconButton edge="end">
-                                <DeleteIcon/>
+                                <DeleteIcon onClick={async () => {
+                                    fetch(process.env.REACT_APP_GATEWAY_URL + "/vulytsi?streetIdToDelete=" + street.id, {method: 'DELETE'})
+                                        .then((response) => {
+                                            if (!response.ok) {
+                                                alert("Cannot delete")
+                                            } else {
+                                                setAllStreets(allStreets.filter(streetFromArray => streetFromArray.id !== street.id));
+                                            }
+                                        });
+                                }}/>
                             </IconButton>
                         ]}
                     >

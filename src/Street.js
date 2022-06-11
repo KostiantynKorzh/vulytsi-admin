@@ -11,6 +11,7 @@ const Street = () => {
 
     const [ coords, setCoords ] = useState([]);
     const [ centerCoords, setCenterCoords ] = useState();
+    const [ type, setType ] = useState("STREET");
 
     const [ streetFromState, setStreetFromState ] = useState({
         id: "",
@@ -19,7 +20,8 @@ const Street = () => {
         year: "",
         generalInfo: "",
         coords: [],
-        formerNamesInfo: []
+        formerNamesInfo: [],
+        type: "STREET"
     });
 
     const [ isModelOpened, setIsModelOpened ] = useState(false);
@@ -49,6 +51,13 @@ const Street = () => {
     }, [ centerCoords ])
 
     useEffect(() => {
+        if (type) {
+            streetFromState.type = type;
+            setStreetFromState({...streetFromState});
+        }
+    }, [ type ])
+
+    useEffect(() => {
         if (street) {
             street.formerNamesInfo.map((formerNameInfo, i) => {
                 formerNameInfo.index = i;
@@ -57,6 +66,7 @@ const Street = () => {
             setStreetFromState(street);
             setCoords(street.coords);
             setCenterCoords(street.centerCoords);
+            setType(street.type)
         }
     }, [ street ])
 
@@ -156,8 +166,14 @@ const Street = () => {
     return (
         <>
             <Container>
-                <Map coords={coords} setCoords={setCoords} centerCoords={centerCoords}
-                     setCenterCoords={setCenterCoords}/>
+                <Map
+                    coords={coords}
+                    setCoords={setCoords}
+                    centerCoords={centerCoords}
+                    setCenterCoords={setCenterCoords}
+                    type={type}
+                    setType={setType}
+                />
                 <div style={{display: "flex",}}>
                     <div style={{
                         minWidth: "80%",

@@ -1,29 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapGL, { Layer, Marker, Source } from "@urbica/react-map-gl";
-import { Button, ButtonGroup } from "@mui/material";
+import { Button, ButtonGroup, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 let isDeletingMarker = false;
 
-export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
+export const Map = ({coords, setCoords, centerCoords, setCenterCoords, type, setType}) => {
     const accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
     const [ selectedCoordsForNewStreet, setSelectedCoordsForNewStreet ] = useState([]);
     const [ matchingCoords, setMatchingCoords ] = useState();
+    const [ areaCoords, setAreaCoords ] = useState();
     const [ isChoosingCenter, setIsChoosingCenter ] = useState(false);
     const [ streetCenterCoords, setStreetCenterCoords ] = useState();
 
     const [ viewport, setViewport ] = useState({
         latitude: 50.45056,
         longitude: 30.52428,
-        zoom: 11
+        zoom: 12
     });
 
     useEffect(() => {
         if (coords) {
-            setMatchingCoords({coordinates: coords, type: "LineString"});
+            if (!type) {
+                setType("STREET");
+                setMatchingCoords({coordinates: coords, type: "LineString"});
+            } else {
+
+                if (type === "STREET") {
+                    setMatchingCoords({coordinates: coords, type: "LineString"});
+                } else if (type === "SQUARE") {
+                    setAreaCoords({coordinates: coords, type: "LineString"});
+                }
+            }
         }
-    }, [ coords ])
+    }, [ coords, type ])
 
     useEffect(() => {
         if (centerCoords) {
@@ -47,6 +58,42 @@ export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
     const streetSourceData = {
         type: "Feature", properties: {}, geometry: matchingCoords
     };
+
+    const areaSourceData = {
+        type: "Feature", properties: {}, geometry: areaCoords
+    };
+
+    const renderDrawButtonsForStreet = () => (
+        <ButtonGroup
+            variant="contained"
+            style={{
+                width: "80%",
+                marginBottom: "40px",
+            }}
+        >
+            <Button
+                variant="contained"
+                size="large"
+                onClick={async () => {
+                    await getMatch();
+                }}
+            >
+                Намалювати (як маршрут)
+            </Button>
+            <Button
+                variant="contained"
+                size="large"
+                onClick={() => {
+                    setMatchingCoords({
+                        coordinates: selectedCoordsForNewStreet.map(coords => [ coords.lng, coords.lat ]),
+                        type: "LineString"
+                    });
+                }}
+            >
+                Намалювати (кастомно)
+            </Button>
+        </ButtonGroup>
+    )
 
     return (
         <div
@@ -90,6 +137,19 @@ export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
                         />
                     </Source>
                 }
+                {areaCoords &&
+                    <Source id="my-area-data" type="geojson" data={areaSourceData}>
+                        <Layer
+                            id="areaLayer"
+                            type="fill"
+                            source="my-area-data"
+                            paint={{
+                                'fill-color': "#03AA46",
+                                'fill-opacity': 0.8
+                            }}
+                        />
+                    </Source>
+                }
                 {selectedCoordsForNewStreet && selectedCoordsForNewStreet.map(selectedCoords => (
                     <Marker
                         longitude={selectedCoords.lng}
@@ -129,22 +189,48 @@ export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
                 style={{
                     textAlign: "center",
                     margin: "auto",
+                    width: "100%"
                 }}
             >
-                <Button
-                    variant="contained"
-                    size="large"
-                    style={{
-                        marginBottom: "40px",
-                        width: "70%",
-                        height: "70px"
+                <ToggleButtonGroup
+                    color="primary"
+                    value={type}
+                    exclusive
+                    onChange={(e, newValue) => {
+                        setType(newValue);
                     }}
-                    onClick={async () => {
-                        await getMatch();
+                    style={{
+                        marginBottom: "40px"
                     }}
                 >
-                    Намалювати
-                </Button>
+                    <ToggleButton value="STREET">Вулиця</ToggleButton>
+                    <ToggleButton value="SQUARE">Площа</ToggleButton>
+                </ToggleButtonGroup>
+
+                {(type && type === "STREET") && (
+                    renderDrawButtonsForStreet()
+                )}
+                {(type && type === "SQUARE") && (
+                    <Button
+                        variant="contained"
+                        size="large"
+                        style={{
+                            marginBottom: "40px",
+                            width: "80%",
+                            height: "70px"
+                        }}
+                        onClick={() => {
+                            let loopedCoords = selectedCoordsForNewStreet.map(coords => [ coords.lng, coords.lat ]);
+                            loopedCoords.push(loopedCoords[0]);
+                            setAreaCoords({
+                                coordinates: loopedCoords,
+                                type: "LineString"
+                            });
+                        }}
+                    >
+                        Замалювати
+                    </Button>
+                )}
                 <Button
                     variant="contained"
                     size="large"
@@ -170,7 +256,12 @@ export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
                         variant="contained"
                         size="large"
                         onClick={() => {
-                            setCoords(matchingCoords.coordinates);
+                            if (type === "STREET") {
+                                setCoords(matchingCoords.coordinates);
+                            } else if (type === "SQUARE") {
+                                setCoords(areaCoords.coordinates);
+                            }
+
                             setCenterCoords(streetCenterCoords);
                         }}
                     >
@@ -183,6 +274,7 @@ export const Map = ({coords, setCoords, centerCoords, setCenterCoords}) => {
                             setSelectedCoordsForNewStreet([]);
                             setMatchingCoords();
                             setStreetCenterCoords();
+                            setAreaCoords();
                         }}
                     >
                         Видалити маркери

@@ -124,7 +124,9 @@ const Street = () => {
                 <div>
                     <h3>Названа на честь</h3>
                     <TextField
+                        multiline
                         fullWidth
+                        rows={4}
                         value={namedAfter}
                         onChange={(e) => {
                             const formerNamesInfoToUpdateIndex = streetFromState.formerNamesInfo.findIndex(info => info.index === index);

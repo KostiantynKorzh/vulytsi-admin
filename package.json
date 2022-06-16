@@ -8,6 +8,7 @@
     "@mui/icons-material": "^5.8.0",
     "@mui/material": "^5.8.1",
     "@urbica/react-map-gl": "^1.15.0",
+    "cross-env": "^7.0.3",
     "mapbox-gl": "^1.13.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",

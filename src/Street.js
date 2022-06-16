@@ -256,7 +256,7 @@ const Street = () => {
             <SaveModal
                 isModelOpened={isModelOpened}
                 handleCloseModal={() => {
-                    setIsModelOpened(false)
+                    setIsModelOpened(false);
                 }}
                 streetInfo={streetFromState}/>
         </>

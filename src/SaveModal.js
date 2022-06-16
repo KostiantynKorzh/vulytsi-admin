@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export const SaveModal = ({isModelOpened, handleCloseModal, streetInfo}) => {
+    const navigate = useNavigate();
 
     const validateStreetInfo = async () => {
         if (streetInfo) {
@@ -28,6 +30,7 @@ export const SaveModal = ({isModelOpened, handleCloseModal, streetInfo}) => {
                 }
             });
             handleCloseModal();
+            navigate("/");
         }
     }
 

@@ -11,15 +11,15 @@ export const AllStreets = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!allStreets || allStreets.length === 0) {
-            async function getAllStreets() {
-                const query = await fetch(process.env.REACT_APP_GATEWAY_URL + "/all-streets", {method: 'GET'});
-                const response = await query.json();
-                setAllStreets(response.Items);
-            }
-
-            getAllStreets();
+        // if (!allStreets || allStreets.length === 0) {
+        async function getAllStreets() {
+            const query = await fetch(process.env.REACT_APP_GATEWAY_URL + "/all-streets", {method: 'GET'});
+            const response = await query.json();
+            setAllStreets(response.Items);
         }
+
+        getAllStreets();
+        // }
     }, [])
 
     return (

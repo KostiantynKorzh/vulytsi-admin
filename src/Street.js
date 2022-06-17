@@ -1,9 +1,10 @@
-import { Button, Container, Divider, TextField } from "@mui/material";
+import { Button, Container, Divider, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import Map from "./Map";
 import SaveModal from "./SaveModal";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { StreetContext } from "./App";
+import FormerNameInput from "./FormerNameInput";
 
 
 const Street = () => {
@@ -69,89 +70,6 @@ const Street = () => {
             setType(street.type)
         }
     }, [ street ])
-
-    const renderFormerNameInput = (index, formerName, year, generalInfo, namedAfter) => (
-        <div style={{marginBottom: "30px"}}>
-            <Divider/>
-            <div style={{display: "flex"}}>
-                <div style={{
-                    minWidth: "80%",
-                    marginRight: "15px",
-                }}>
-                    <h3>Назва</h3>
-                    <TextField
-                        fullWidth
-                        value={formerName}
-                        onChange={(e) => {
-                            const formerNamesInfoToUpdateIndex = streetFromState.formerNamesInfo.findIndex(info => info.index === index);
-                            streetFromState.formerNamesInfo[formerNamesInfoToUpdateIndex].formerName = e.target.value;
-                            setStreetFromState({...streetFromState});
-                        }}
-                    />
-                </div>
-                <div>
-                    <h3>Рік</h3>
-                    <TextField
-                        value={year}
-                        onChange={(e) => {
-                            const formerNamesInfoToUpdateIndex = streetFromState.formerNamesInfo.findIndex(info => info.index === index);
-                            streetFromState.formerNamesInfo[formerNamesInfoToUpdateIndex].year = e.target.value;
-                            setStreetFromState({...streetFromState});
-                        }}
-                    />
-                </div>
-                <div>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        startIcon={<DeleteIcon/>}
-                        style={{
-                            maxWidth: "30px",
-                            height: "50px",
-                            position: "relative",
-                            top: "62px",
-                            marginLeft: "15px"
-                        }}
-                        onClick={() => {
-                            streetFromState.formerNamesInfo = streetFromState.formerNamesInfo.filter(formerNamesInfo => formerNamesInfo.index !== index);
-                            setStreetFromState({...streetFromState});
-                        }}
-                    >
-                    </Button>
-                </div>
-            </div>
-            <div>
-                <div>
-                    <h3>Названа на честь</h3>
-                    <TextField
-                        multiline
-                        fullWidth
-                        rows={4}
-                        value={namedAfter}
-                        onChange={(e) => {
-                            const formerNamesInfoToUpdateIndex = streetFromState.formerNamesInfo.findIndex(info => info.index === index);
-                            streetFromState.formerNamesInfo[formerNamesInfoToUpdateIndex].namedAfter = e.target.value;
-                            setStreetFromState({...streetFromState});
-                        }}
-                    />
-                </div>
-                <div>
-                    <h3>Загальна інформація</h3>
-                    <TextField
-                        multiline
-                        fullWidth
-                        rows={3}
-                        value={generalInfo}
-                        onChange={(e) => {
-                            const formerNamesInfoToUpdateIndex = streetFromState.formerNamesInfo.findIndex(info => info.index === index);
-                            streetFromState.formerNamesInfo[formerNamesInfoToUpdateIndex].generalInfo = e.target.value;
-                            setStreetFromState({...streetFromState});
-                        }}
-                    />
-                </div>
-            </div>
-        </div>
-    )
 
     const onClickAddFormerName = () => {
         if (!streetFromState.formerNamesInfo || streetFromState.formerNamesInfo.length === 0) {
@@ -244,7 +162,11 @@ const Street = () => {
                     </Button>
                 </div>
                 {streetFromState.formerNamesInfo && streetFromState.formerNamesInfo.map(info => (
-                    renderFormerNameInput(info.index, info.formerName, info.year, info.generalInfo, info.namedAfter)
+                    <FormerNameInput
+                        formerNameInfo={info}
+                        streetFromState={streetFromState}
+                        setStreetFromState={setStreetFromState}
+                    />
                 ))}
                 <Button
                     variant="contained"

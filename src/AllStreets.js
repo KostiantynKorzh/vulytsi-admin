@@ -4,11 +4,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { StreetContext } from "./App";
 import { useNavigate } from "react-router-dom";
+import DeleteModal from "./DeleteModal";
 
 export const AllStreets = () => {
     const {setStreet, allStreets, setAllStreets} = useContext(StreetContext);
 
     const navigate = useNavigate();
+
+    const [ streetToDelete, setStreetToDelete ] = useState();
+    const [ isDeleteModalOpened, setIsDeleteModalOpened ] = useState(false);
 
     useEffect(() => {
         // if (!allStreets || allStreets.length === 0) {
@@ -35,15 +39,9 @@ export const AllStreets = () => {
                                 <EditIcon/>
                             </IconButton>,
                             <IconButton edge="end">
-                                <DeleteIcon onClick={async () => {
-                                    fetch(process.env.REACT_APP_GATEWAY_URL + "/vulytsi?streetIdToDelete=" + street.id, {method: 'DELETE'})
-                                        .then((response) => {
-                                            if (!response.ok) {
-                                                alert("Cannot delete")
-                                            } else {
-                                                setAllStreets(allStreets.filter(streetFromArray => streetFromArray.id !== street.id));
-                                            }
-                                        });
+                                <DeleteIcon onClick={() => {
+                                    setIsDeleteModalOpened(true);
+                                    setStreetToDelete(street);
                                 }}/>
                             </IconButton>
                         ]}
@@ -54,6 +52,15 @@ export const AllStreets = () => {
                     </ListItem>
                 ))}
             </List>
+            <DeleteModal
+                isModelOpened={isDeleteModalOpened}
+                handleCloseModal={() => {
+                    setIsDeleteModalOpened(false);
+                }}
+                streetInfo={streetToDelete}
+                allStreets={allStreets}
+                setAllStreets={setAllStreets}
+            />
         </Container>
     );
 };

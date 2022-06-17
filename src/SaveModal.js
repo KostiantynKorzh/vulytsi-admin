@@ -43,6 +43,10 @@ export const SaveModal = ({isModelOpened, handleCloseModal, streetInfo}) => {
                 {"Перевірка"}
             </DialogTitle>
             <DialogContent>
+                <h2>Теги</h2>
+                <ul>{streetInfo.tags.map(tag=>(
+                    <li>{tag}</li>
+                ))}</ul>
                 <h2>Назва</h2>
                 <p>{streetInfo.name}</p>
                 <h2>Рік</h2>

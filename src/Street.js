@@ -1,10 +1,10 @@
-import { Button, Container, Divider, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Button, Checkbox, Container, FormControlLabel, FormGroup, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import Map from "./Map";
 import SaveModal from "./SaveModal";
-import DeleteIcon from '@mui/icons-material/Delete';
 import { StreetContext } from "./App";
 import FormerNameInput from "./FormerNameInput";
+import Tags from "./Tags";
 
 
 const Street = () => {
@@ -13,6 +13,11 @@ const Street = () => {
     const [ coords, setCoords ] = useState([]);
     const [ centerCoords, setCenterCoords ] = useState();
     const [ type, setType ] = useState("STREET");
+    const [ tags, setTags ] = useState({
+        "Декомунізація": false,
+        "Дерусифікація": false,
+        "Німецька окупація": false
+    });
 
     const [ streetFromState, setStreetFromState ] = useState({
         id: "",
@@ -22,7 +27,8 @@ const Street = () => {
         generalInfo: "",
         coords: [],
         formerNamesInfo: [],
-        type: "STREET"
+        type: "STREET",
+        tags: []
     });
 
     const [ isModelOpened, setIsModelOpened ] = useState(false);
@@ -36,6 +42,13 @@ const Street = () => {
     // useEffect(() => {
     //     console.log(streetFromState);
     // }, [ streetFromState ])
+
+    useEffect(() => {
+        streetFromState.tags = Object.entries(tags)
+            .filter(([ key, value ]) => value === true)
+            .map(([ key, value ]) => key);
+        setStreetFromState({...streetFromState})
+    }, [ tags ])
 
     useEffect(() => {
         if (coords) {
@@ -64,6 +77,21 @@ const Street = () => {
                 formerNameInfo.index = i;
                 return formerNameInfo;
             })
+            if (street.tags) {
+                let checkedTags = {}
+                street.tags.forEach(tag => {
+                    checkedTags = {
+                        ...checkedTags,
+                        [tag]: true
+                    }
+                });
+                setTags({
+                    ...tags,
+                    ...checkedTags
+                });
+            } else {
+                street.tags = [];
+            }
             setStreetFromState(street);
             setCoords(street.coords);
             setCenterCoords(street.centerCoords);
@@ -93,6 +121,10 @@ const Street = () => {
                     setCenterCoords={setCenterCoords}
                     type={type}
                     setType={setType}
+                />
+                <Tags
+                    tags={tags}
+                    setTags={setTags}
                 />
                 <div style={{display: "flex",}}>
                     <div style={{

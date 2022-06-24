@@ -29,7 +29,15 @@ export const AllStreets = () => {
     return (
         <Container maxWidth="md">
             <List>
-                {allStreets && allStreets.map(street => (
+                {allStreets && allStreets.sort((a, b) => {
+                    if (a.name < b.name) {
+                        return -1;
+                    }
+                    if (a.name > b.name) {
+                        return 1;
+                    }
+                    return 0;
+                }).map(street => (
                     <ListItem
                         secondaryAction={[
                             <IconButton onClick={() => {

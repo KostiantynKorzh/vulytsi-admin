@@ -1,25 +1,41 @@
 import React from 'react';
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Checkbox,
+    FormControlLabel,
+    FormGroup,
+    Typography
+} from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export const Tags = ({tags, setTags}) => {
     return (
-        <>
-            <h1>Теги</h1>
-            <FormGroup>
-                {tags && Object.entries(tags).map(([ key, value ]) => (
-                    <FormControlLabel control={<Checkbox
-                        checked={value}
-                        onChange={(e) => {
-                            setTags({
-                                ...tags,
-                                [key]: e.target.checked
-                            })
-                        }}
-                    />} label={key}/>
-                ))
-                }
-            < /FormGroup>
-        </>
+        <div style={{
+            marginTop: "40px"
+        }}>{tags &&
+            <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>}><Typography>Tags</Typography></AccordionSummary>
+                <AccordionDetails>
+                    <FormGroup>
+                        {Object.entries(tags).map(([ key, value ]) => (
+                            <FormControlLabel control={<Checkbox
+                                checked={value}
+                                onChange={(e) => {
+                                    setTags({
+                                        ...tags,
+                                        [key]: e.target.checked
+                                    })
+                                }}
+                            />} label={key}/>
+                        ))
+                        }
+                    < /FormGroup>
+                </AccordionDetails>
+            </Accordion>
+        }
+        </div>
     );
 };
 
